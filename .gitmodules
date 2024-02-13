@@ -1,0 +1,3 @@
+[submodule "DexNet2"]
+	path = DexNet2
+	url = git@github.com:BerkeleyAutomation/gqcnn.git
