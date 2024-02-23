@@ -1,0 +1,3 @@
+[submodule "gqcnn_smartDumpster"]
+	path = gqcnn_smartDumpster
+	url = https://github.com/nannn3/gqcnn_smartDumpster
