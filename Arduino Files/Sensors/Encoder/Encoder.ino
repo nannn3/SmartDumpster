@@ -20,17 +20,9 @@ void setup() {
 
   pinMode(pinA, INPUT);
   pinMode(pinB, INPUT);
-  // Only attach an interrupt to pinA
+//Reading interrupt for only pin A, since UNO only has two capable interrupt pins and we want to save for potential other uses.
   attachInterrupt(digitalPinToInterrupt(pinA), readEncoder, CHANGE);
 }
-// void setup() {
-//   Serial.begin(115200);
-
-//   pinMode(pinA, INPUT);
-//   pinMode(pinB, INPUT);
-//   attachInterrupt(digitalPinToInterrupt(pinA), readEncoder, CHANGE);
-//   attachInterrupt(digitalPinToInterrupt(pinB), readEncoder, CHANGE);
-// }
 
 int GetPosition(void) {
   return encoder_count;
@@ -64,51 +56,9 @@ void readEncoder() {
   lastA = A;
   lastB = B;
 
-  // Optionally handle overflow/underflow or reset conditions here
-  // Example: Reset position if exceeds MAX_TICKS or goes below -MAX_TICKS
+  // handle overflow/underflow or reset conditions here
   if (encoder_count >= MAX_TICKS || encoder_count <= -MAX_TICKS) ResetPosition();
 }
-// void readEncoder() {
-//   int A = digitalRead(pinA);
-//   int B = digitalRead(pinB);
-//   if (encoder_count == MAX_TICKS || encoder_count == -MAX_TICKS) {
-//     ResetPosition();
-//   }
-
-//   //anything else that needs to happen goes here
-//   switch (current_state) {
-//     case state_1:
-//       if ((A == 1) && (B == 0)) {
-//         current_state = state_2;
-//         encoder_count = (encoder_count - 1) % MAX_TICKS;
-//       } else if ((A == 0) && (B == 1)) {
-//         current_state = state_4;
-//         encoder_count = (encoder_count + 1) % MAX_TICKS;
-//       }
-//       break;
-//     case state_2:
-//       if ((A == 0) && (B == 0)) {
-//         current_state = state_3;
-//       } else if ((A == 1) && (B == 1)) {
-//         current_state = state_1;
-//       }
-//       break;
-//     case state_3:
-//       if ((A == 0) && (B == 1)) {
-//         current_state = state_4;
-//       } else if ((A == 1) && (B == 0)) {
-//         current_state = state_2;
-//       }
-//       break;
-//     case state_4:
-//       if ((A == 1) && (B == 1)) {
-//         current_state = state_1;
-//       } else if ((A == 0) && (B == 0)) {
-//         current_state = state_3;
-//       }
-//       break;
-//   }
-// }
 
 void loop() {
   int current_count = GetPosition();
