@@ -1,7 +1,7 @@
 // Define the PWM pins for each color channel
-const int redPin = 9;    // PWM pin for red LED
-const int greenPin = 10; // PWM pin for green LED
-const int bluePin = 11;  // PWM pin for blue LED
+const int redPin = 3;    // PWM pin for red LED
+const int greenPin = 5; // PWM pin for green LED
+const int bluePin = 6;  // PWM pin for blue LED
 
 // Note: ~ on the Arduino board means PWM cable pins
 
