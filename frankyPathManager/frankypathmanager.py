@@ -123,10 +123,8 @@ if __name__ == "__main__":
                     '0.3,-0.2,0.02\n',
                     '0.3,0.2,0.02|\n'
                     '0.6,0.2,0.02|\n']
-
-    manager.add_endpoint((1, 2, 3))
-    manager.add_endpoint((4, 5, 6))
-    manager.add_startpoint((0, 0, 0))
+    for coord in example_string:
+        manager.add_endpoint(coord)
     manager.write_path()
     print("Current Path:", manager.get_current_path())
 
