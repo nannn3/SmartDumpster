@@ -1,5 +1,4 @@
 import os
-import pdb
 class FrankyPathManager:
     def __init__(self, path_file="~/franky/franky/items/Pending_items.txt", start_file="~/franky/franky/items/START.txt", finished_file="~/franky/franky/items/Finished_items.txt"):
         """
