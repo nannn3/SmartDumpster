@@ -15,8 +15,8 @@ const int greenPin = 5;  // PWM pin for green LED
 const int bluePin = 6;   // PWM pin for blue LED
 
 // Define Arduino pin numbers connected to the L298N module
-const int motorIn1 = 12;  // IN1 on the L298N
-const int motorIn2 = 9;   // IN2 on the L298N
+const int motorIn1 = 9;  // IN1 on the L298N
+const int motorIn2 = 10;   // IN2 on the L298N
 const int motorEnA = 11;  // ENA on the L298N for PWM speed control
 
 #endif	/* Config_H */
