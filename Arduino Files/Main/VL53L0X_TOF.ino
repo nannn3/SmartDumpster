@@ -10,6 +10,7 @@ int ToF_init(void) {
   // Initialize VL53L0X sensor
   Wire.begin();
   sensor.init();
+  return true;
 }
 
 // SDA is pin A4

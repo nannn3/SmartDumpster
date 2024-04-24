@@ -23,7 +23,7 @@ typedef enum {
   sorting,
   bin_full,
   error
-} rror_states;
+} conveyor_states;
 
 // struct for error state machine
 typedef enum {
@@ -32,6 +32,20 @@ typedef enum {
   failedToInitialize,
   FOD
 } error_states;
+
+int Main_init(void) {
+  Serial.begin(115200);
+  Encoder_init();
+  LED_init();
+  Motor_init();
+  ToF_init();
+  if (Encoder_init() != true | LED_init() != true | Motor_init() != true | ToF_init != true) {
+    error_flag = true;
+    operation_flag = STOP;
+    return false;
+  }
+  return true;
+}
 
 int checkOperationStatus(void) {
   if (Serial.available() > 0) {
@@ -91,9 +105,15 @@ void runErrorStateMachine() {
       break;
     case failedToInitialize:
       // check to see if all sensors, arm, and camera initialize completely
+      if (Main_init() == true) {
+        error_flag = false;
+        currentErrorState = clear;
+        error_type = 0;
+      }else{
+        currentErrorState = failedToInitialize;
+      }
       break;
     case FOD:
-      // check to see if FOD has been cleared
       break;
   }
 }
@@ -163,9 +183,9 @@ void runConveyorStateMachine() {
     case error:
       // check error state machine and return error message to user
       runErrorStateMachine();
-      if (error_flag == true){
+      if (error_flag == true) {
         currentConveyorState = error;
-      } else if (error_flag == false){
+      } else if (error_flag == false) {
         currentConveyorState = start;
       }
       break;
@@ -174,11 +194,7 @@ void runConveyorStateMachine() {
 
 #ifdef MAIN_LOOP
 void setup() {
-  Serial.begin(115200);
-  Encoder_init();
-  LED_init();
-  Motor_init();
-  ToF_init();
+  Main_init();
 }
 
 void loop() {

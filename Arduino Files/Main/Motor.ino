@@ -7,6 +7,7 @@ int Motor_init(void){
   pinMode(motorIn1, OUTPUT);
   pinMode(motorIn2, OUTPUT);
   pinMode(motorEnA, OUTPUT);
+  return true;
 }
 
 void motorForward(int speed) {

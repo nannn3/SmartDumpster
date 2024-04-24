@@ -19,6 +19,7 @@ int Encoder_init(void) {
   pinMode(pinB, INPUT);
   //Reading interrupt for only pin A, since UNO only has two capable interrupt pins and we want to save for potential other uses.
   attachInterrupt(digitalPinToInterrupt(pinA), readEncoder, CHANGE);
+  return true;
 }
 
 int GetPosition(void) {
