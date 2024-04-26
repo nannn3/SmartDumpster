@@ -197,7 +197,7 @@ void runConveyorStateMachine() {
         // set motor speed for conveyor belt
         motorStop();
 
-        // set LED to orange to notify user git sbin is full
+        // set LED to orange to notify user bin is full
         setColor(0, 90, 255);  // orange is typically red = 255, green = 165, blue = 0 with common cathode.
       }
       break;
