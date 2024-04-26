@@ -12,7 +12,7 @@ typedef enum {
   state_2 = 1,
   state_3 = 2,
   state_4 = 3
-} conveyor_states;
+} encoder_states;
 
 int Encoder_init(void) {
   pinMode(pinA, INPUT);

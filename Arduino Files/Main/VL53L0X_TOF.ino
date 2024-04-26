@@ -4,8 +4,6 @@
 #define VL53L0X_ADDRESS 0x29
 // #define TOF_LOOP
 
-VL53L0X sensor;
-
 int ToF_init(void) {
   // Initialize VL53L0X sensor
   Wire.begin();

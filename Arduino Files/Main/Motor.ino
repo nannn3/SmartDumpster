@@ -11,7 +11,8 @@ int Motor_init(void){
 }
 
 void motorForward(int speed) {
-  analogWrite(motorEnA, speed);  // Set motor speed
+  digitalWrite(motorEnA, HIGH);  // Set motor speed
+  // analogWrite(motorEnA, speed);  // Set motor speed
   digitalWrite(motorIn1, HIGH);  // Set motor direction
   digitalWrite(motorIn2, LOW);
 }

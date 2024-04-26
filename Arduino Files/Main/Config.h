@@ -1,3 +1,5 @@
+#include <VL53L0X.h>
+
 #ifndef Config_H
 #define	Config_H
 
@@ -18,5 +20,33 @@ const int bluePin = 6;   // PWM pin for blue LED
 const int motorIn1 = 9;  // IN1 on the L298N
 const int motorIn2 = 10;   // IN2 on the L298N
 const int motorEnA = 11;  // ENA on the L298N for PWM speed control
+
+// Initializing ToF sensor
+VL53L0X sensor;
+
+// Force Sensor Functions
+float convertResistanceToForce(float V2);
+float readForceSensor(float forcePin);
+
+// Encoder Sensor Functions
+int Encoder_init(void);
+int GetPosition(void);
+void ResetPosition();
+int encoder_to_degrees(int value);
+void readEncoder();
+
+// LED functions
+int LED_init(void);
+void setColor(int redValue, int greenValue, int blueValue);
+
+// Motor functions
+int Motor_init(void);
+void motorForward(int speed);
+void motorReverse(int speed);
+void motorStop();
+
+// ToF Sensor Functions
+int ToF_init(void);
+uint16_t readDistance();
 
 #endif	/* Config_H */

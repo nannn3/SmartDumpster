@@ -6,16 +6,18 @@
 // green LED color when conveyor belt is actively moving
 
 #define MAIN_LOOP
-#define START 1           // used to tell the program to start the operations of the conveyor belt
-#define STOP 0            // used to tell the program to stop the operations of the conveyor belt
-#define ToF_THRESHOLD 10  // change this value to show desired minimum desitance of ToF reading in mm
-#define F_THRESHOLD 10    // change this value to show max weight allowable for user to lift
+#define START 1            // used to tell the program to start the operations of the conveyor belt
+#define STOP 0             // used to tell the program to stop the operations of the conveyor belt
+#define ToF_THRESHOLD 100  // change this value to show desired minimum desitance of ToF reading in mm
+#define F_THRESHOLD 1000   // change this value to show max weight allowable for user to lift
 
 int operation_flag = STOP;     // initial state of the operation should be stop
 int currentConveyorState = 0;  // initialize conveyor belt state machine to start
 int error_flag = false;        // starting error state
 int currentErrorState = 0;     // initialize error state machine to clear
 int error_type = 0;
+int ToF_reading = 0;
+int force_reading = 0;
 
 // struct for conveyor belt state machine
 typedef enum {
@@ -33,14 +35,42 @@ typedef enum {
   FOD
 } error_states;
 
+// struct for error types
+typedef enum {
+  error_clear,
+  FailedEncoderInit,
+  FailedLEDInit,
+  FailedMotorInit,
+  FailedTOFInit
+} error_ops;
+
 int Main_init(void) {
   Serial.begin(115200);
   Encoder_init();
   LED_init();
   Motor_init();
   ToF_init();
-  if (Encoder_init() != true | LED_init() != true | Motor_init() != true | ToF_init != true) {
+  if (Encoder_init() != true) {
     error_flag = true;
+    error_type = FailedEncoderInit;
+    operation_flag = STOP;
+    return false;
+  }
+  if (LED_init() != true) {
+    error_flag = true;
+    error_type = FailedLEDInit;
+    operation_flag = STOP;
+    return false;
+  }
+  if (Motor_init() != true) {
+    error_flag = true;
+    error_type = FailedMotorInit;
+    operation_flag = STOP;
+    return false;
+  }
+  if (ToF_init() != true) {
+    error_flag = true;
+    error_type = FailedTOFInit;
     operation_flag = STOP;
     return false;
   }
@@ -109,7 +139,7 @@ void runErrorStateMachine() {
         error_flag = false;
         currentErrorState = clear;
         error_type = 0;
-      }else{
+      } else {
         currentErrorState = failedToInitialize;
       }
       break;
@@ -119,6 +149,10 @@ void runErrorStateMachine() {
 }
 
 void runConveyorStateMachine() {
+  Serial.println("TOF");
+  Serial.println(ToF_reading);
+  Serial.println("force");
+  Serial.println(force_reading);
   switch (currentConveyorState) {
     case start:
       if (operation_flag == START) {
@@ -133,31 +167,37 @@ void runConveyorStateMachine() {
       if (operation_flag == STOP) {
         if (error_flag == true) {
           currentConveyorState = error;
+          motorStop();
+          setColor(0, 255, 255);
         } else {
           currentConveyorState = start;
+          motorStop();
+          setColor(0, 0, 0);
         }
         break;
       }
+
+      ToF_reading = readDistance();
+      force_reading = convertResistanceToForce(readForceSensor(sensorPin1));
       // check if both ToF and force sensor are detecting an empty bin
-      else if (readDistance() > ToF_THRESHOLD && convertResistanceToForce(readForceSensor(sensorPin1)) < F_THRESHOLD) {
+      if (ToF_reading > ToF_THRESHOLD && force_reading < F_THRESHOLD) {
         currentConveyorState = sorting;
 
         // set motor speed for conveyor belt
-        motorForward(127);  // half speed is 127, full speed is 255
+        motorForward(255);  // half speed is 127, full speed is 255
 
         // set LED to green for active sorting
         setColor(255, 0, 255);  // since the LED is a common anode, 255 is off and 0 is on. This is inverse if LED is common cathode
-
       }
 
       // check if either ToF or force sensor detect an empty bin
-      else if (readDistance() < ToF_THRESHOLD | convertResistanceToForce(readForceSensor(sensorPin1)) > F_THRESHOLD) {
+      else if (ToF_reading< ToF_THRESHOLD | force_reading > F_THRESHOLD) {
         currentConveyorState = bin_full;
 
         // set motor speed for conveyor belt
         motorStop();
 
-        // set LED to orange to notify user bin is full
+        // set LED to orange to notify user git sbin is full
         setColor(0, 90, 255);  // orange is typically red = 255, green = 165, blue = 0 with common cathode.
       }
       break;
@@ -166,18 +206,27 @@ void runConveyorStateMachine() {
       if (operation_flag == STOP) {
         if (error_flag == true) {
           currentConveyorState = error;
+          motorStop();
+          setColor(0, 255, 255);
         } else {
           currentConveyorState = start;
+          motorStop();
+          setColor(0, 0, 0);
         }
         break;
       }
+      ToF_reading = readDistance();
+      force_reading = convertResistanceToForce(readForceSensor(sensorPin1));
       // check if ToF or force sensor still detect a full bin
-      if (readDistance() < ToF_THRESHOLD | convertResistanceToForce(readForceSensor(sensorPin1)) > F_THRESHOLD) {
+      if (ToF_reading< ToF_THRESHOLD | force_reading > F_THRESHOLD) {
         currentConveyorState = bin_full;
       }
       // check if the ToF and force sensor no longer sense a full bin
-      else if (readDistance() > ToF_THRESHOLD && convertResistanceToForce(readForceSensor(sensorPin1)) < F_THRESHOLD) {
+      else if (ToF_reading > ToF_THRESHOLD && force_reading < F_THRESHOLD) {
+        operation_flag = STOP;
         currentConveyorState = start;  // sets back to start rather than sorting so user has to implement start command and can assure user safely away from belt
+        // set LED to white to notify user of default state
+        setColor(0, 0, 0);  // orange is typically red = 255, green = 165, blue = 0 with common cathode.
       }
       break;
     case error:
@@ -187,6 +236,7 @@ void runConveyorStateMachine() {
         currentConveyorState = error;
       } else if (error_flag == false) {
         currentConveyorState = start;
+          setColor(0, 0, 0);
       }
       break;
   }
@@ -199,5 +249,6 @@ void setup() {
 
 void loop() {
   checkOperationStatus();
+  runConveyorStateMachine();
 }
 #endif MAIN_LOOP

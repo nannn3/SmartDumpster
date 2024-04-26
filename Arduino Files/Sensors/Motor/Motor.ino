@@ -1,6 +1,6 @@
 // Define Arduino pin numbers connected to the L298N module
-const int motorIn1 = 12;  // IN1 on the L298N
-const int motorIn2 = 9;   // IN2 on the L298N
+const int motorIn1 = 9;  // IN1 on the L298N
+const int motorIn2 = 10;   // IN2 on the L298N
 const int motorEnA = 11;  // ENA on the L298N for PWM speed control
 
 void setup() {
@@ -30,7 +30,7 @@ void motorStop() {
 
 void loop() {
   // Spin the motor forward at full speed
-  motorForward(127); // Half speed
+  motorForward(255); // Half speed
   delay(2000);
 
   // Stop the motor
@@ -38,7 +38,7 @@ void loop() {
   delay(1000);
 
   // Spin the motor in reverse at half speed
-  motorReverse(127); // Half speed
+  motorReverse(255); // Half speed
   delay(2000);
 
   // Stop the motor
