@@ -22,7 +22,10 @@ const int motorIn2 = 10;   // IN2 on the L298N
 const int motorEnA = 11;  // ENA on the L298N for PWM speed control
 
 // Initializing ToF sensor
-VL53L0X sensor;
+VL53L0X sensor1;
+VL53L0X sensor2;
+int xshut1 = 8;
+int xshut2 = 12;
 
 // Force Sensor Functions
 float convertResistanceToForce(float V2);
@@ -47,6 +50,6 @@ void motorStop();
 
 // ToF Sensor Functions
 int ToF_init(void);
-uint16_t readDistance();
+uint16_t readDistance(VL53L0X &sensor);
 
 #endif	/* Config_H */

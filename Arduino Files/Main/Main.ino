@@ -5,7 +5,7 @@
 // yellow LED color when arm is actively sorting
 // green LED color when conveyor belt is actively moving
 
-#define MAIN_LOOP
+// #define MAIN_LOOP
 #define START 1            // used to tell the program to start the operations of the conveyor belt
 #define STOP 0             // used to tell the program to stop the operations of the conveyor belt
 #define ToF_THRESHOLD 100  // change this value to show desired minimum desitance of ToF reading in mm
@@ -38,10 +38,12 @@ typedef enum {
 // struct for error types
 typedef enum {
   error_clear,
-  FailedEncoderInit,
-  FailedLEDInit,
-  FailedMotorInit,
-  FailedTOFInit
+  error_FOD,
+  error_FailedToInit,
+  error_FailedEncoderInit,
+  error_FailedLEDInit,
+  error_FailedMotorInit,
+  error_FailedTOFInit
 } error_ops;
 
 int Main_init(void) {
@@ -52,25 +54,25 @@ int Main_init(void) {
   ToF_init();
   if (Encoder_init() != true) {
     error_flag = true;
-    error_type = FailedEncoderInit;
+    error_type = error_FailedEncoderInit;
     operation_flag = STOP;
     return false;
   }
   if (LED_init() != true) {
     error_flag = true;
-    error_type = FailedLEDInit;
+    error_type = error_FailedLEDInit;
     operation_flag = STOP;
     return false;
   }
   if (Motor_init() != true) {
     error_flag = true;
-    error_type = FailedMotorInit;
+    error_type = error_FailedMotorInit;
     operation_flag = STOP;
     return false;
   }
   if (ToF_init() != true) {
     error_flag = true;
-    error_type = FailedTOFInit;
+    error_type = error_FailedTOFInit;
     operation_flag = STOP;
     return false;
   }
@@ -97,14 +99,21 @@ int checkOperationStatus(void) {
     } else if (command == "fod" | command == "Fod" | command == "FOD" | command == "FoD") {
       operation_flag = STOP;
       error_flag = true;
-      error_type = "FOD";
+      error_type = error_FOD;
       // echo the command back to the serial monitor
       Serial.print("Command received: ");
       Serial.println(command);
     } else if (command == "FailedToInitialize" | command == "failedtoinitialize" | command == "FAILEDTOINITIALIZE" | command == "Failedtoinitialze") {
       operation_flag = STOP;
       error_flag = true;
-      error_type = "FailedToInitialize";
+      error_type = error_FailedToInit;
+      // echo the command back to the serial monitor
+      Serial.print("Command received: ");
+      Serial.println(command);
+    } else if (command == "FoD Clear" | command == "FOD Clear" | command == "fod clear" | command == "FOD CLEAR") {
+      operation_flag = STOP;
+      error_flag = true;
+      error_type = error_clear;
       // echo the command back to the serial monitor
       Serial.print("Command received: ");
       Serial.println(command);
@@ -144,6 +153,14 @@ void runErrorStateMachine() {
       }
       break;
     case FOD:
+      if (error_type != error_clear) {
+        error_flag = true;
+        currentErrorState = FOD;
+      } else {
+        error_flag = false;
+        currentErrorState = clear;
+        error_type = 0;
+      }
       break;
   }
 }
@@ -177,7 +194,7 @@ void runConveyorStateMachine() {
         break;
       }
 
-      ToF_reading = readDistance();
+      ToF_reading = readDistance(sensor1);
       force_reading = convertResistanceToForce(readForceSensor(sensorPin1));
       // check if both ToF and force sensor are detecting an empty bin
       if (ToF_reading > ToF_THRESHOLD && force_reading < F_THRESHOLD) {
@@ -207,15 +224,15 @@ void runConveyorStateMachine() {
         if (error_flag == true) {
           currentConveyorState = error;
           motorStop();
-          setColor(0, 255, 255);
+          setColor(0, 255, 255); // set color back to red to show error
         } else {
           currentConveyorState = start;
           motorStop();
-          setColor(0, 0, 0);
+          setColor(0, 0, 0); // set color back to white to show clear
         }
         break;
       }
-      ToF_reading = readDistance();
+      ToF_reading = readDistance(sensor1);
       force_reading = convertResistanceToForce(readForceSensor(sensorPin1));
       // check if ToF or force sensor still detect a full bin
       if (ToF_reading< ToF_THRESHOLD | force_reading > F_THRESHOLD) {
@@ -236,7 +253,7 @@ void runConveyorStateMachine() {
         currentConveyorState = error;
       } else if (error_flag == false) {
         currentConveyorState = start;
-          setColor(0, 0, 0);
+        setColor(0, 0, 0); // set color back to white to show clear
       }
       break;
   }
