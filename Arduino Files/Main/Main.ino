@@ -112,7 +112,7 @@ int checkOperationStatus(void) {
       Serial.println(command);
     } else if (command == "FoD Clear" | command == "FOD Clear" | command == "fod clear" | command == "FOD CLEAR") {
       operation_flag = STOP;
-      error_flag = true;
+      error_flag = false;
       error_type = error_clear;
       // echo the command back to the serial monitor
       Serial.print("Command received: ");

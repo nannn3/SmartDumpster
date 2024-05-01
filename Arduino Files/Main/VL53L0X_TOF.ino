@@ -24,21 +24,6 @@ int ToF_init(void) {
   delay(10);
   sensor2.init();
   sensor2.setAddress(0x2B);  // Set a new address for sensor 2
-
-  // sensor1.init();
-  // // Initialize sensor 1 (default address is already 0x29)
-  // pinMode(xshut1, OUTPUT);
-  // digitalWrite(xshut1, LOW);
-  // delay(10);
-  // digitalWrite(xshut1, HIGH);
-
-  // sensor2.init();
-  //   // Initialize sensor 2 and set a new address
-  // pinMode(xshut2, OUTPUT);
-  // digitalWrite(xshut2, LOW);
-  // delay(10);
-  // digitalWrite(xshut2, HIGH);
-  // sensor2.setAddress(0x30);  // Set the new address for sensor 2
   return true;
 }
 
@@ -49,7 +34,8 @@ uint16_t readDistance(VL53L0X &sensor) {
   // Start a single measurement
   // Read distance measurement in millimeters
   sensor.startContinuous(20);
-  uint16_t distance = sensor.readRangeContinuousMillimeters() - 50;
+  uint16_t reading = sensor.readRangeContinuousMillimeters();
+  uint16_t distance = ((0.769*reading) - 10.8)/10; //Calibration and conversion to cm.
   return distance;
 }
 
@@ -67,14 +53,14 @@ void loop() {
 
   Serial.print("Distance of sensor 1: ");
   Serial.print(distance1);
-  Serial.println(" mm");
+  Serial.println(" cm");
 
   // Read distance from VL53L0X sensor2
   uint16_t distance2 = readDistance(sensor2);
 
   Serial.print("Distance of sensor 2: ");
   Serial.print(distance2);
-  Serial.println(" mm");
-  delay(100);
+  Serial.println(" cm");
+  delay(1000);
 }
 #endif TOF_LOOP
