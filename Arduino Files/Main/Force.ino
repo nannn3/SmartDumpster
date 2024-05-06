@@ -1,14 +1,12 @@
 #include "Config.h"
 
-// #define FORCE_LOOP
-
-// Define the supply voltage and fixed resistor value
-const float Vr = 5.0;    // Assuming a 5V supply voltage
-const float R1 = 10000;  // 47k ohm fixed resistor
+#define FORCE_LOOP
 
 // Example conversion function - needs actual implementation
-float convertResistanceToForce(float V2) {
-  float force = 0.028 * V2;
+float convertToForce(float V2) {
+  // float force = (0.0107 * V2) - 0.0594;
+  float force = (0.0105 * V2) - 0.959;
+  // float force = (0.00868 * V2) - 0.518;
   return force;
 }
 
@@ -27,29 +25,19 @@ void loop() {
   // Read the sensor voltage
   float V2_1 = analogRead(sensorPin1);  // reads 0 - 1023
   float V2_2 = analogRead(sensorPin2);
-  float V2_3 = analogRead(sensorPin3);
 
-  // Convert Rs to force in Newtons
-  // Placeholder for the conversion formula - needs calibration or datasheet info
-  float force1 = convertResistanceToForce(V2_1);  // This function needs to be defined based on sensor calibration
-  float force2 = convertResistanceToForce(V2_2);
-  float force3 = convertResistanceToForce(V2_3);
+  // Convert Rs to force in lbs
+  float force1 = convertToForce(V2_1);  // This function needs to be defined based on sensor calibration
+  // float force2 = convertToForce(V2_2);
 
   // Output the force reading
-  // Serial.print(V2_1);
-  // Serial.print(", ");
-  // Serial.print(V2_2);
-  // Serial.print(", ");
-  // Serial.println(V2_3);
+  Serial.println(V2_1);
 
-  Serial.print(force1);
-  Serial.print(", ");
-  Serial.print(force2);
-  Serial.print(", ");
-  Serial.println(force3);
+
+  // Serial.println(force1);
 
   // Delay for a bit to avoid spamming
-  delay(1000);
+  delay(100);
 }
 #endif
 

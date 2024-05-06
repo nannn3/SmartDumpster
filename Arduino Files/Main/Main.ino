@@ -9,7 +9,7 @@
 #define START 1            // used to tell the program to start the operations of the conveyor belt
 #define STOP 0             // used to tell the program to stop the operations of the conveyor belt
 #define ToF_THRESHOLD 100  // change this value to show desired minimum desitance of ToF reading in mm
-#define F_THRESHOLD 1000   // change this value to show max weight allowable for user to lift
+#define F_THRESHOLD 5   // change this value to show max weight allowable for user to lift, 500 = raw value adc, 5 lbs
 
 int operation_flag = STOP;     // initial state of the operation should be stop
 int currentConveyorState = 0;  // initialize conveyor belt state machine to start
@@ -195,7 +195,7 @@ void runConveyorStateMachine() {
       }
 
       ToF_reading = readDistance(sensor1);
-      force_reading = convertResistanceToForce(readForceSensor(sensorPin1));
+      force_reading = convertToForce(readForceSensor(sensorPin1));
       // check if both ToF and force sensor are detecting an empty bin
       if (ToF_reading > ToF_THRESHOLD && force_reading < F_THRESHOLD) {
         currentConveyorState = sorting;
@@ -233,7 +233,7 @@ void runConveyorStateMachine() {
         break;
       }
       ToF_reading = readDistance(sensor1);
-      force_reading = convertResistanceToForce(readForceSensor(sensorPin1));
+      force_reading = convertToForce(readForceSensor(sensorPin1));
       // check if ToF or force sensor still detect a full bin
       if (ToF_reading< ToF_THRESHOLD | force_reading > F_THRESHOLD) {
         currentConveyorState = bin_full;

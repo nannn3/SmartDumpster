@@ -28,7 +28,7 @@ int xshut1 = 8;
 int xshut2 = 12;
 
 // Force Sensor Functions
-float convertResistanceToForce(float V2);
+float convertToForce(float V2);
 float readForceSensor(float forcePin);
 
 // Encoder Sensor Functions

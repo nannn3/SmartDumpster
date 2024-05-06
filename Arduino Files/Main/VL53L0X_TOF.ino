@@ -1,7 +1,7 @@
 #include <Wire.h>
 #include <VL53L0X.h>
 
-#define TOF_LOOP
+// #define TOF_LOOP
 
 int ToF_init(void) {
   // Initialize VL53L0X sensor
@@ -35,7 +35,7 @@ uint16_t readDistance(VL53L0X &sensor) {
   // Read distance measurement in millimeters
   sensor.startContinuous(20);
   uint16_t reading = sensor.readRangeContinuousMillimeters();
-  uint16_t distance = ((0.769*reading) - 10.8)/10; //Calibration and conversion to cm.
+  uint16_t distance = (reading-6)/10; //Calibration and conversion to cm.
   return distance;
 }
 
@@ -61,6 +61,6 @@ void loop() {
   Serial.print("Distance of sensor 2: ");
   Serial.print(distance2);
   Serial.println(" cm");
-  delay(1000);
+  delay(100);
 }
 #endif TOF_LOOP

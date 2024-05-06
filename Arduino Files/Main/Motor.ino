@@ -46,9 +46,9 @@ void loop() {
   motorStop();
   delay(1000);
 
-  // Spin the motor in reverse at half speed
-  motorReverse(127); // Half speed
-  delay(2000);
+  // // Spin the motor in reverse at half speed
+  // motorReverse(127); // Half speed
+  // delay(2000);
 
   // Stop the motor
   motorStop();
