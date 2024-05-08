@@ -9,13 +9,20 @@
 #define START 1           // used to tell the program to start the operations of the conveyor belt
 #define STOP 0            // used to tell the program to stop the operations of the conveyor belt
 #define ToF_THRESHOLD 10  // change this value to show desired minimum desitance of ToF reading in mm
-#define F_THRESHOLD 600   // change this value to show max weight allowable for user to lift, 500 = raw value adc, 5 lbs
+#define F_THRESHOLD 700   // change this value to show max weight allowable for user to lift, 500 = raw value adc, 5 lbs
 
 int operation_flag = STOP;     // initial state of the operation should be stop
 int currentConveyorState = 0;  // initialize conveyor belt state machine to start
 int error_flag = false;        // starting error state
 int currentErrorState = 0;     // initialize error state machine to clear
 int error_type = 0;
+
+// moving average for force sensor
+const int numReadings = 10;  // Number of readings to average
+int readings[numReadings];   // Array to store the readings
+int readIndex = 0;           // Index of the current reading
+int total = 0;               // Running total of the readings
+int average = 0;             // The average of the readings
 
 // place holders
 int ToF_reading = 0;
@@ -57,6 +64,11 @@ typedef enum {
   error_FailedTOFInit
 } error_ops;
 
+int ClearMovingAverage() {
+  for (int thisReading = 0; thisReading < numReadings; thisReading++) {
+    readings[thisReading] = 0;  // Initialize all the readings to 0
+  }
+}
 int Main_init(void) {
   Serial.begin(115200);
   Encoder_init();
@@ -179,12 +191,16 @@ void runErrorStateMachine() {
 void runConveyorStateMachine() {
   // Serial.println("TOF");
   // Serial.println(new_ToF1);
-  // Serial.println("force");
+  // Serial.println("force1");
   // Serial.println(new_For1);
+  // Serial.println("force");start
+  
+  // Serial.println(average);
   switch (currentConveyorState) {
     case start:
       if (operation_flag == START) {
         currentConveyorState = sorting;
+        ClearMovingAverage();
       } else {
         currentConveyorState = start;
         if (wait != 1) {
@@ -214,9 +230,18 @@ void runConveyorStateMachine() {
       if ((prev_ToF1 != new_ToF1) | (prev_For1 != new_For1)) {
         prev_ToF1 = new_ToF1;
         prev_For1 = new_For1;
+        readings[readIndex] = prev_For1;  // Read from the sensor
+        for (int i = 0; i < numReadings; i++) {
+          total += readings[i];
+        }                                           // Add the newest reading to the total
+        readIndex = (readIndex + 1) % numReadings;  // Advance to the next position in the array
+
+        // Calculate the average:
+        average = total / numReadings;
+        total = 0;
         delay(500);
         // check if both ToF and force sensor are detecting an empty bin
-        if (new_ToF1 > ToF_THRESHOLD && new_For1 < F_THRESHOLD) {
+        if (new_ToF1 > ToF_THRESHOLD && average < F_THRESHOLD) {
           currentConveyorState = sorting;
 
           // set motor speed for conveyor belt
@@ -226,7 +251,7 @@ void runConveyorStateMachine() {
           setColor(255, 0, 255);  // since the LED is a common anode, 255 is off and 0 is on. This is inverse if LED is common cathode
         }
         // check if either ToF or force sensor detect an empty bin
-        else if (new_ToF1< ToF_THRESHOLD | new_For1 > F_THRESHOLD) {
+        else if (new_ToF1< ToF_THRESHOLD | average > F_THRESHOLD) {
           currentConveyorState = bin_full;
 
           // set motor speed for conveyor belt
@@ -252,19 +277,35 @@ void runConveyorStateMachine() {
         }
         break;
       }
-      ToF_reading = readDistance(sensor1);
-      force_reading = convertToForce(readForceSensor(sensorPin1));
-      // check if ToF or force sensor still detect a full bin
-      if (ToF_reading< ToF_THRESHOLD | force_reading > F_THRESHOLD) {
-        currentConveyorState = bin_full;
-      }
-      // check if the ToF and force sensor no longer sense a full bin
-      else if (ToF_reading > ToF_THRESHOLD && force_reading < F_THRESHOLD) {
-        operation_flag = STOP;
-        currentConveyorState = start;  // sets back to start rather than sorting so user has to implement start command and can assure user safely away from belt
-        wait = 0;
-        // set LED to white to notify user of default state
-        setColor(0, 0, 0);  // orange is typically red = 255, green = 165, blue = 0 with common cathode.
+      new_ToF1 = readDistance(sensor1);
+      new_For1 = readForceSensor(sensorPin1);
+      // new_For1 = convertToForce(readForceSensor(sensorPin1));
+      if ((prev_ToF1 != new_ToF1) | (prev_For1 != new_For1)) {
+        prev_ToF1 = new_ToF1;
+        prev_For1 = new_For1;
+        readings[readIndex] = prev_For1;  // Read from the sensor
+        for (int i = 0; i < numReadings; i++) {
+          total += readings[i];
+        }                                           // Add the newest reading to the total
+        readIndex = (readIndex + 1) % numReadings;  // Advance to the next position in the array
+
+        // Calculate the average:
+        average = total / numReadings;
+        total = 0;
+        delay(500);
+        // check if both ToF and force sensor are detecting an empty bin
+        if (new_ToF1< ToF_THRESHOLD | average > F_THRESHOLD) {
+          currentConveyorState = bin_full;
+        }
+        // check if either ToF or force sensor detect an empty bin
+        else if (new_ToF1 > ToF_THRESHOLD && average < F_THRESHOLD) {
+          operation_flag = STOP;
+          currentConveyorState = start;  // sets back to start rather than sorting so user has to implement start command and can assure user safely away from belt
+          wait = 0;
+          ClearMovingAverage();
+          // set LED to white to notify user of default state
+          setColor(0, 0, 0);  // orange is typically red = 255, green = 165, blue = 0 with common cathode.
+        }
       }
       break;
     case error:
@@ -284,6 +325,8 @@ void runConveyorStateMachine() {
 #ifdef MAIN_LOOP
 void setup() {
   Main_init();
+  ClearMovingAverage();
+  total = 0;
 }
 
 void loop() {
