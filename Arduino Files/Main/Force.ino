@@ -1,6 +1,6 @@
 #include "Config.h"
 
-#define FORCE_LOOP
+// #define FORCE_LOOP
 
 // Example conversion function - needs actual implementation
 float convertToForce(float V2) {
@@ -31,10 +31,10 @@ void loop() {
   // float force2 = convertToForce(V2_2);
 
   // Output the force reading
-  Serial.println(V2_1);
+  // Serial.println(V2_1);
 
 
-  // Serial.println(force1);
+  Serial.println(force1);
 
   // Delay for a bit to avoid spamming
   delay(100);

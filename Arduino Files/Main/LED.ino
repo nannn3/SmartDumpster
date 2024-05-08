@@ -29,35 +29,36 @@ void setup() {
 
 void loop() {
   // Example: Fade through different colors
-  for (int i = 255; i >= 0; i--) {
-    // Fade in red
-    setColor(i, 255, 255);
-    delay(10);
-  }
-  for (int i = 0; i <= 255; i++) {
-    // Fade out red
-    setColor(i, 255, 255);
-    delay(10);  // Function from Arduino core library, reads miliseconds, currently 0.01 second delay
-  }
-  for (int i = 255; i >= 0; i--) {
-    // Fade in green
-    setColor(255, i, 255);
-    delay(10);
-  }
-  for (int i = 0; i <= 255; i++) {
-    // Fade out green
-    setColor(255, i, 255);
-    delay(10);
-  }
-  for (int i = 255; i >= 0; i--) {
-    // Fade in blue
-    setColor(255, 255, i);
-    delay(10);
-  }
-  for (int i = 0; i <= 255; i++) {
-    // Fade out blue
-    setColor(255, 255, i);
-    delay(10);
-  }
+  setColor(0, 255, 255);
+  // for (int i = 255; i >= 0; i--) {
+  //   // Fade in red
+  //   setColor(i, 255, 255);
+  //   delay(10);
+  // }
+  // for (int i = 0; i <= 255; i++) {
+  //   // Fade out red
+  //   setColor(i, 255, 255);
+  //   delay(10);  // Function from Arduino core library, reads miliseconds, currently 0.01 second delay
+  // }
+  // for (int i = 255; i >= 0; i--) {
+  //   // Fade in green
+  //   setColor(255, i, 255);
+  //   delay(10);
+  // }
+  // for (int i = 0; i <= 255; i++) {
+  //   // Fade out green
+  //   setColor(255, i, 255);
+  //   delay(10);
+  // }
+  // for (int i = 255; i >= 0; i--) {
+  //   // Fade in blue
+  //   setColor(255, 255, i);
+  //   delay(10);
+  // }
+  // for (int i = 0; i <= 255; i++) {
+  //   // Fade out blue
+  //   setColor(255, 255, i);
+  //   delay(10);
+  // }
 }
 #endif

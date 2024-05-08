@@ -35,7 +35,8 @@ uint16_t readDistance(VL53L0X &sensor) {
   // Read distance measurement in millimeters
   sensor.startContinuous(20);
   uint16_t reading = sensor.readRangeContinuousMillimeters();
-  uint16_t distance = (reading-6)/10; //Calibration and conversion to cm.
+  uint16_t distance = (reading) / 10;  //Calibration and conversion to cm, soldered ToF does not need calibration, but breadboarded ToF does. Calibrated function commented below.
+  // uint16_t distance = (reading - 6) / 10;  //Calibration and conversion to cm.
   return distance;
 }
 
@@ -58,9 +59,9 @@ void loop() {
   // Read distance from VL53L0X sensor2
   uint16_t distance2 = readDistance(sensor2);
 
-  Serial.print("Distance of sensor 2: ");
-  Serial.print(distance2);
-  Serial.println(" cm");
+  // Serial.print("Distance of sensor 2: ");
+  // Serial.print(distance2);
+  // Serial.println(" cm");
   delay(100);
 }
 #endif TOF_LOOP
