@@ -121,7 +121,7 @@ int checkOperationStatus(void) {
       // echo the command back to the serial monitor
       Serial.print("Command received: ");
       Serial.println(command);
-    } else if (command == "FoD Clear" | command == "FOD Clear" | command == "fod clear" | command == "FOD CLEAR") {
+    } else if (command == "Clear" | command == "clear" | command == "CLEAR") {
       operation_flag = STOP;
       error_flag = false;
       error_type = error_clear;
@@ -187,10 +187,10 @@ void runConveyorStateMachine() {
         currentConveyorState = sorting;
       } else {
         currentConveyorState = start;
-        if(wait != 1){
+        if (wait != 1) {
           Serial.println("Awaiting START command.");
           wait = 1;
-        }       
+        }
       }
       break;
     case sorting:
@@ -226,7 +226,7 @@ void runConveyorStateMachine() {
           setColor(255, 0, 255);  // since the LED is a common anode, 255 is off and 0 is on. This is inverse if LED is common cathode
         }
         // check if either ToF or force sensor detect an empty bin
-        else if (new_ToF1 < ToF_THRESHOLD | new_For1 > F_THRESHOLD) {
+        else if (new_ToF1< ToF_THRESHOLD | new_For1 > F_THRESHOLD) {
           currentConveyorState = bin_full;
 
           // set motor speed for conveyor belt
