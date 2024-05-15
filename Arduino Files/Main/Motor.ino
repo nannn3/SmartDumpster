@@ -40,18 +40,18 @@ void setup() {
 void loop() {
   // Spin the motor forward at full speed
   motorForward(127); // Half speed
-  delay(2000);
-
-  // Stop the motor
-  motorStop();
-  delay(1000);
-
-  // // Spin the motor in reverse at half speed
-  // motorReverse(127); // Half speed
   // delay(2000);
 
   // Stop the motor
-  motorStop();
-  delay(1000);
+  // motorStop();
+  // delay(1000);
+
+  // // // Spin the motor in reverse at half speed
+  // // motorReverse(127); // Half speed
+  // // delay(2000);
+
+  // // Stop the motor
+  // motorStop();
+  // delay(1000);
 }
 #endif MOTOR_LOOP

@@ -5,7 +5,7 @@
 // yellow LED color when arm is actively sorting
 // green LED color when conveyor belt is actively moving
 
-#define MAIN_LOOP
+// #define MAIN_LOOP
 #define START 1           // used to tell the program to start the operations of the conveyor belt
 #define STOP 0            // used to tell the program to stop the operations of the conveyor belt
 #define ToF_THRESHOLD 10  // change this value to show desired minimum desitance of ToF reading in mm
@@ -69,6 +69,7 @@ int ClearMovingAverage() {
     readings[thisReading] = 0;  // Initialize all the readings to 0
   }
 }
+
 int Main_init(void) {
   Serial.begin(115200);
   Encoder_init();
