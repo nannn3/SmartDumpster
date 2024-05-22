@@ -1,7 +1,8 @@
 #include "Config.h"
 
-#define LED_LOOP
+// #define LED_LOOP
 
+// initializes the LED pins
 int LED_init(void) {
   // Set PWM pins as outputs
   pinMode(redPin, OUTPUT);
@@ -11,6 +12,7 @@ int LED_init(void) {
 }
 
 // Function to set the RGB color, max PWM value is 255 (?)
+// sets PWM signals for red, green and blue pins
 void setColor(int redValue, int greenValue, int blueValue) {
   analogWrite(redPin, redValue);
   analogWrite(greenPin, greenValue);

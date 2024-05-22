@@ -2,17 +2,18 @@
 
 // #define FORCE_LOOP
 
-// Example conversion function - needs actual implementation
+// a function that takes a raw reading value from an analog pin
+float readForceSensor(float forcePin){
+  float voltage = analogRead(forcePin);
+  return voltage;
+}
+
+// a function that takes an adc value from the analog pin and converts it to force
 float convertToForce(float V2) {
   // float force = (0.0107 * V2) - 0.0594;
   float force = (0.0105 * V2) - 0.959;
   // float force = (0.00868 * V2) - 0.518;
   return force;
-}
-
-float readForceSensor(float forcePin){
-  float voltage = analogRead(forcePin);
-  return voltage;
 }
 
 #ifdef FORCE_LOOP

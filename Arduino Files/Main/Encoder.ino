@@ -14,6 +14,7 @@ typedef enum {
   state_4 = 3
 } encoder_states;
 
+// a function to initialize encoder pins and the interrupt
 int Encoder_init(void) {
   pinMode(pinA, INPUT);
   pinMode(pinB, INPUT);
@@ -22,20 +23,24 @@ int Encoder_init(void) {
   return true;
 }
 
+// get the position of the encoder in a given moment
 int GetPosition(void) {
   return encoder_count;
 }
 
+// resets the position of the encoder and sets to 0
 void ResetPosition() {
   encoder_count = 0;
   current_state = 0;
 }
 
+// converts encoder readings to degrees of a circle
 int encoder_to_degrees(int value) {
   int degrees = value * 0.0703125;
   return degrees;
 }
 
+// reads the A, B, and Index of encoder and calculates the position of the encoder based of the three values
 void readEncoder() {
   int A = digitalRead(pinA);
   int B = digitalRead(pinB);

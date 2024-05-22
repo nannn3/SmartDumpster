@@ -3,6 +3,7 @@
 
 // #define TOF_LOOP
 
+// initializes pins, instances, and sets the address for the sensors. Initializes the I2C
 int ToF_init(void) {
   // Initialize VL53L0X sensor
   Wire.begin();
@@ -29,6 +30,7 @@ int ToF_init(void) {
 
 // SDA is pin A4
 // SCL is pin A5
+// returns distance in cm
 uint16_t readDistance(VL53L0X &sensor) {
 
   // Start a single measurement
@@ -36,7 +38,6 @@ uint16_t readDistance(VL53L0X &sensor) {
   sensor.startContinuous(20);
   uint16_t reading = sensor.readRangeContinuousMillimeters();
   uint16_t distance = (reading) / 10;  //Calibration and conversion to cm, soldered ToF does not need calibration, but breadboarded ToF does. Calibrated function commented below.
-  // uint16_t distance = (reading - 6) / 10;  //Calibration and conversion to cm.
   return distance;
 }
 
